@@ -5,12 +5,10 @@ import { useState } from "react";
 const verdicts = [
   "It doesn't matter.",
   "Either way, the outcome is the same.",
-  "No.",
   "Yes. Or no. It's irrelevant.",
   "You already knew the answer. It was nothing.",
-  "Flip a coin. The coin doesn't care either.",
   "Whatever you choose, nothing changes.",
-  "The decision has been made: indifference.",
+  "Its a hard choice !.",
 ];
 
 const steps = [

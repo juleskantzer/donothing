@@ -46,6 +46,7 @@ export default function ProductivityTimer() {
 
   const t = format(elapsed);
   const minutesWasted = elapsed / 60000;
+  const secondsWasted = Math.floor(elapsed / 1000);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-16 min-h-[calc(100vh-9rem)] flex flex-col justify-center">
@@ -76,9 +77,9 @@ export default function ProductivityTimer() {
           <span className="text-2xl text-[#555] ml-1">.{t.cs}</span>
         </div>
         <div className="mt-4 text-xs text-[#333] tracking-widest">
-          {minutesWasted < 0.01
+          {secondsWasted < 1
             ? "the clock is ticking"
-            : `${minutesWasted.toFixed(2)} minutes you will never get back`}
+            : `${secondsWasted} second${secondsWasted !== 1 ? "s" : ""} you will never get back`}
         </div>
       </div>
 
@@ -102,7 +103,7 @@ export default function ProductivityTimer() {
       <div className="mt-10 grid grid-cols-3 gap-px border border-[#1a1a1a] rounded-sm overflow-hidden">
         {[
           { value: "0", label: "tasks completed" },
-          { value: t.s === t.cs ? "—" : "0%", label: "efficiency" },
+          { value: "0%", label: "efficiency" },
           { value: minutesWasted >= 1 ? `${Math.floor(minutesWasted)}m` : "0m", label: "regret accrued" },
         ].map((stat) => (
           <div key={stat.label} className="bg-[#0d0d0d] px-4 py-6 text-center">
