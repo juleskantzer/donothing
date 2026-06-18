@@ -8,13 +8,6 @@ const me = [
 
 const brother = [{ label: "GitHub", href: "https://github.com/MarkusLeGrand" }];
 
-const roadmap = [
-  { status: "Shipping", title: "Dark mode", note: "It was already nothing in every color." },
-  { status: "In progress", title: "Mobile app", note: "Nothing, now in your pocket." },
-  { status: "Exploring", title: "Cloud sync", note: "Sync absolutely nothing across all your devices." },
-  { status: "Someday", title: "Autonomous agent", note: "An AI that does nothing on your behalf, 24/7." },
-];
-
 function Person({ name, links }: { name: string; links: { label: string; href: string }[] }) {
   return (
     <div>
@@ -55,24 +48,6 @@ export default function About() {
         <Person name="Markus Le Grand" links={brother} />
       </div>
 
-      {/* Roadmap — what's coming next (still nothing) */}
-      <div className="mt-16 border-t border-[#ececec] pt-12">
-        <p className="text-[10px] uppercase tracking-widest text-[#999]">Roadmap</p>
-        <ul className="mt-5 space-y-5">
-          {roadmap.map((item) => (
-            <li key={item.title} className="flex items-start gap-4">
-              <span className="mt-0.5 shrink-0 rounded-full bg-[#f0f0ee] px-2.5 py-1 text-[10px] uppercase tracking-widest text-[#888]">
-                {item.status}
-              </span>
-              <div>
-                <p className="text-sm text-[#141414]">{item.title}</p>
-                <p className="text-xs leading-relaxed text-[#999]">{item.note}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
       {/* Support — no card, just a hairline and centered prose */}
       <div className="mt-16 border-t border-[#ececec] pt-12 text-center">
         <p className="mx-auto max-w-md text-sm leading-relaxed text-[#707070]">
@@ -80,7 +55,7 @@ export default function About() {
           suite of tools engineered to accomplish absolutely nothing. We did that for no reason.
         </p>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[#141414]">
-          If you want to support nothing, tips here — especially if this site was of no use to you.
+          If this site was completely useless to you, feel free to leave a tip anyway.
         </p>
 
         <a

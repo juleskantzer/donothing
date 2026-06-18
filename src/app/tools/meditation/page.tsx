@@ -94,6 +94,15 @@ export default function Meditation() {
             <p>✓ Ambient sounds included: none</p>
             <p>✓ Inner peace achieved: results may vary</p>
           </div>
+
+          {/* Player — stream the silence in place */}
+          <div className="border border-[#e2e2e0] bg-white p-4">
+            <p className="text-[10px] tracking-widest text-[#8a8a8a] uppercase mb-3">Now playing — nothing</p>
+            <audio controls src="/api/silence" className="w-full">
+              Your browser does not support the audio element. Which, fittingly, changes nothing.
+            </audio>
+          </div>
+
           <a
             href="/api/silence"
             download="nothing_meditation.mp3"
@@ -103,6 +112,17 @@ export default function Meditation() {
           </a>
           <p className="text-center text-[#b0b0b0] text-xs">
             Find a quiet place. Play this. Experience nothing.
+          </p>
+          <p className="text-center text-[11px] text-[#cfcfcf]">
+            or, if you ever want a{" "}
+            <a
+              href="https://oh-myzen.com/en"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-[#e2e2e0] underline-offset-2 transition-colors hover:text-[#8a8a8a]"
+            >
+              real one
+            </a>
           </p>
         </div>
       )}

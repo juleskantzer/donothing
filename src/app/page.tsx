@@ -95,7 +95,6 @@ const tools = [
 ];
 
 const featured = tools.filter((t) => t.featured);
-const rest = tools.filter((t) => !t.featured);
 
 // initial scattered spots for the featured post-its (percent of board)
 const spots = [
@@ -256,15 +255,14 @@ export default function Home() {
       <section className="border-t border-[#ececec] bg-white">
         <div className="max-w-6xl mx-auto px-6 py-20">
           <div className="mb-12">
-            <h2 className="text-2xl font-semibold tracking-tight text-[#111]">The rest of nothing</h2>
+            <h2 className="text-2xl font-semibold tracking-tight text-[#111]">All tools</h2>
             <p className="text-[#777] mt-2 text-sm">
-              {tools.length} tools. Zero outcomes. The {featured.length} above are
-              merely the most prominent disappointments — here is the remainder.
+              {tools.length} tools. Zero outcomes. Browse the complete collection below.
             </p>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.map((tool) => (
+            {tools.map((tool) => (
               <Link
                 key={tool.slug}
                 href={`/tools/${tool.slug}`}

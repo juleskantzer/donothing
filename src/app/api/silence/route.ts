@@ -16,10 +16,11 @@ export async function GET() {
     0x6e, 0x6f, 0x74, 0x68, 0x69, 0x6e, 0x67, // "nothing"
   ]);
 
-  // Generate ~30s of silence: 128kbps MP3 silent frames
-  // Each MPEG1 Layer3 128kbps frame = 417 bytes, 26ms duration
-  // 30s / 0.026s ≈ 1153 frames
-  const frameCount = 1153;
+  // Generate 30 min of silence: 128kbps MP3 silent frames.
+  // Players estimate duration as bytes * 8 / bitrate, so we size the stream to
+  // exactly 1800s worth of bytes: 1800 * 128000 / 8 = 28,800,000 bytes.
+  // 28,800,000 / 417 ≈ 69065 frames → reported duration lands on 30:00.
+  const frameCount = 69065;
   const frameSize = 417;
   const silentFrames = Buffer.alloc(frameCount * frameSize, 0x00);
   // Write sync word + header for each frame
