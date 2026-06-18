@@ -290,12 +290,20 @@ export default function Home() {
         <footer className="border-t border-[#ececec]">
           <div className="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-[#aaa]">
             <span>nothing © {new Date().getFullYear()} — there is nothing we can do</span>
-            <Link
-              href="/about"
-              className="uppercase tracking-widest transition-colors hover:text-[#333]"
-            >
-              About
-            </Link>
+            <nav className="flex items-center gap-6">
+              <Link
+                href="/about"
+                className="uppercase tracking-widest transition-colors hover:text-[#333]"
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className="uppercase tracking-widest transition-colors hover:text-[#333]"
+              >
+                Contact
+              </Link>
+            </nav>
           </div>
         </footer>
       </section>
