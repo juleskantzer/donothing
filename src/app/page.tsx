@@ -165,6 +165,64 @@ export default function Home() {
     setDraggingI(null);
   }, []);
 
+  // ── the big button at the bottom: looks important, does absolutely nothing ──
+  const audioCtx = useRef<AudioContext | null>(null);
+  const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [pressed, setPressed] = useState(false);
+  const rippleId = useRef(0);
+
+  const playClick = useCallback(() => {
+    try {
+      audioCtx.current ??= new (window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      const ctx = audioCtx.current;
+      const now = ctx.currentTime;
+
+      // a short burst of filtered noise = the sharp "click" of the switch
+      const len = Math.floor(ctx.sampleRate * 0.05);
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource();
+      noise.buffer = buf;
+      const bp = ctx.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.frequency.value = 2600;
+      bp.Q.value = 1.4;
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.5, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
+      noise.connect(bp).connect(noiseGain).connect(ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.05);
+
+      // a low resonant "thock" for the bottom-out body of the keypress
+      const thock = ctx.createOscillator();
+      const thockGain = ctx.createGain();
+      thock.type = "sine";
+      thock.frequency.setValueAtTime(220, now);
+      thock.frequency.exponentialRampToValueAtTime(120, now + 0.04);
+      thockGain.gain.setValueAtTime(0.22, now);
+      thockGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+      thock.connect(thockGain).connect(ctx.destination);
+      thock.start(now);
+      thock.stop(now + 0.07);
+    } catch {
+      // a click that makes no sound is still, fittingly, nothing
+    }
+  }, []);
+
+  const onNothingClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const id = rippleId.current++;
+      setRipples((r) => [...r, { id, x: e.clientX - rect.left, y: e.clientY - rect.top }]);
+      setTimeout(() => setRipples((r) => r.filter((rp) => rp.id !== id)), 600);
+      playClick();
+    },
+    [playClick]
+  );
+
   return (
     <div className="min-h-screen">
       {/* ── HERO : light desk with a few draggable post-its ── */}
@@ -284,6 +342,44 @@ export default function Home() {
                 <p className="mt-2 text-sm leading-relaxed text-[#777]">{tool.description}</p>
               </Link>
             ))}
+          </div>
+        </div>
+
+        {/* ── The Button : visibly clickable, audibly clickable, functionally nothing ── */}
+        <div className="border-t border-[#ececec]">
+          <div className="max-w-6xl mx-auto px-6 py-24 flex flex-col items-center text-center">
+            <h2 className="text-2xl font-semibold tracking-tight text-[#111]">
+              Ready to accomplish nothing?
+            </h2>
+            <p className="text-[#777] mt-2 text-sm max-w-md">
+              One click is all it takes. No sign-up, no outcome, no regrets.
+            </p>
+            <button
+              type="button"
+              onClick={onNothingClick}
+              onPointerDown={() => setPressed(true)}
+              onPointerUp={() => setPressed(false)}
+              onPointerLeave={() => setPressed(false)}
+              style={{ transform: pressed ? "translateY(1px) scale(0.97)" : undefined }}
+              className="relative mt-8 overflow-hidden rounded-full bg-[#111] px-10 py-4
+                text-sm font-medium tracking-wide text-white
+                shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]
+                transition-[transform,box-shadow] duration-150 ease-out
+                hover:shadow-[0_16px_40px_-12px_rgba(0,0,0,0.55)]
+                active:shadow-[0_4px_12px_-4px_rgba(0,0,0,0.5)]"
+            >
+              {ripples.map((r) => (
+                <span
+                  key={r.id}
+                  className="ripple pointer-events-none absolute h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/40"
+                  style={{ left: r.x, top: r.y }}
+                />
+              ))}
+              <span className="relative">Do nothing</span>
+            </button>
+            <p className="text-[#bbb] mt-4 text-[11px] tracking-widest uppercase">
+              Nothing happens. As promised.
+            </p>
           </div>
         </div>
 
