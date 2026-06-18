@@ -95,6 +95,7 @@ const tools = [
 ];
 
 const featured = tools.filter((t) => t.featured);
+const rest = tools.filter((t) => !t.featured);
 
 // initial scattered spots for the featured post-its (percent of board)
 const spots = [
@@ -255,14 +256,15 @@ export default function Home() {
       <section className="border-t border-[#ececec] bg-white">
         <div className="max-w-6xl mx-auto px-6 py-20">
           <div className="mb-12">
-            <h2 className="text-2xl font-semibold tracking-tight text-[#111]">All tools</h2>
+            <h2 className="text-2xl font-semibold tracking-tight text-[#111]">The rest of nothing</h2>
             <p className="text-[#777] mt-2 text-sm">
-              Eight tools. Zero outcomes. Browse the complete collection below.
+              {tools.length} tools. Zero outcomes. The {featured.length} above are
+              merely the most prominent disappointments — here is the remainder.
             </p>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {tools.map((tool) => (
+            {rest.map((tool) => (
               <Link
                 key={tool.slug}
                 href={`/tools/${tool.slug}`}
@@ -288,8 +290,14 @@ export default function Home() {
         </div>
 
         <footer className="border-t border-[#ececec]">
-          <div className="max-w-6xl mx-auto px-6 py-8 text-center text-xs text-[#aaa]">
-            nothing © {new Date().getFullYear()} — there is nothing we can do
+          <div className="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-[#aaa]">
+            <span>nothing © {new Date().getFullYear()} — there is nothing we can do</span>
+            <Link
+              href="/about"
+              className="uppercase tracking-widest transition-colors hover:text-[#333]"
+            >
+              About
+            </Link>
           </div>
         </footer>
       </section>
