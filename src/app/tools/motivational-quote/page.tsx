@@ -26,12 +26,12 @@ export default function MotivationalQuote() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-16">
-      <a href="/" className="text-[#444] text-xs tracking-widest hover:text-[#666] transition-colors mb-8 inline-block">
+    <div className="max-w-2xl mx-auto px-6 py-16 min-h-[calc(100vh-9rem)] flex flex-col justify-center">
+      <a href="/" className="text-[#444] text-xs tracking-widest hover:text-[#666] transition-colors mb-8 inline-block self-start">
         ← back to nothing
       </a>
 
-      <div className="mb-10">
+      <div className="mb-10 text-center">
         <span className="text-[10px] tracking-widest text-[#444] uppercase border border-[#2a2a2a] px-2 py-0.5 rounded-sm">
           Productivity
         </span>
