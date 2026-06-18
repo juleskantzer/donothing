@@ -96,25 +96,25 @@ export default function QrCode() {
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-16 min-h-[calc(100vh-9rem)] flex flex-col justify-center">
-      <a href="/" className="text-[#444] text-xs tracking-widest hover:text-[#666] transition-colors mb-8 inline-block self-start">
+      <a href="/" className="text-[#8a8a8a] text-xs tracking-widest hover:text-[#5a5a5a] transition-colors mb-8 inline-block self-start">
         ← back to nothing
       </a>
 
       <div className="mb-10 text-center">
-        <span className="text-[10px] tracking-widest text-[#444] uppercase border border-[#2a2a2a] px-2 py-0.5 rounded-sm">
+        <span className="text-[10px] tracking-widest text-[#8a8a8a] uppercase border border-[#dcdcdc] px-2 py-0.5 rounded-sm">
           AI-Powered
         </span>
-        <h1 className="text-3xl font-bold text-white mt-4 mb-2 tracking-tight">QR Code Generator</h1>
-        <p className="text-[#555] text-sm leading-relaxed">
+        <h1 className="text-3xl font-bold text-[#141414] mt-4 mb-2 tracking-tight">QR Code Generator</h1>
+        <p className="text-[#707070] text-sm leading-relaxed">
           Instantly generate a high-resolution, fully scannable QR code. Point any camera at it to
           unlock its powerful, life-changing payload.
         </p>
       </div>
 
       {/* Display */}
-      <div className="border border-[#222] bg-[#0d0d0d] p-10 mb-6 rounded-sm min-h-[280px] flex flex-col items-center justify-center">
+      <div className="border border-[#e2e2e0] bg-[#f7f7f5] p-10 mb-6 rounded-sm min-h-[280px] flex flex-col items-center justify-center">
         {state === "idle" && (
-          <p className="text-[#2a2a2a] text-sm tracking-widest">your QR code will appear here</p>
+          <p className="text-[#dcdcdc] text-sm tracking-widest">your QR code will appear here</p>
         )}
 
         {state === "generating" && (
@@ -123,7 +123,7 @@ export default function QrCode() {
               <div
                 key={i}
                 className={`flex items-center gap-3 text-xs transition-colors ${
-                  i < step ? "text-[#333]" : i === step ? "text-[#888]" : "text-[#222]"
+                  i < step ? "text-[#b0b0b0]" : i === step ? "text-[#454545]" : "text-[#e2e2e0]"
                 }`}
               >
                 <span className={i === step ? "blink" : ""}>
@@ -140,7 +140,7 @@ export default function QrCode() {
             <div className="bg-white p-3 rounded-sm">
               <QrSvg className="w-48 h-48" />
             </div>
-            <p className="text-[#444] text-xs mt-4 tracking-widest">scan me</p>
+            <p className="text-[#8a8a8a] text-xs mt-4 tracking-widest">scan me</p>
           </div>
         )}
       </div>
@@ -148,7 +148,7 @@ export default function QrCode() {
       {state === "idle" && (
         <button
           onClick={generate}
-          className="w-full py-3 bg-white text-black text-sm font-semibold tracking-widest uppercase hover:bg-[#e5e5e5] transition-colors"
+          className="w-full py-3 bg-[#141414] text-white text-sm font-semibold tracking-widest uppercase hover:bg-black transition-colors"
         >
           Generate QR Code
         </button>
@@ -156,7 +156,7 @@ export default function QrCode() {
 
       {state === "done" && (
         <div className="space-y-4">
-          <div className="border border-[#1a1a1a] bg-[#0d0d0d] p-4 text-xs text-[#444] space-y-1">
+          <div className="border border-[#ececec] bg-[#f7f7f5] p-4 text-xs text-[#8a8a8a] space-y-1">
             <p>✓ QR code generated</p>
             <p>✓ Encoded payload: &ldquo;nothing&rdquo;</p>
             <p>✓ Scans successfully: yes</p>
@@ -164,11 +164,11 @@ export default function QrCode() {
           </div>
           <button
             onClick={download}
-            className="w-full py-3 bg-white text-black text-sm font-semibold tracking-widest uppercase hover:bg-[#e5e5e5] transition-colors"
+            className="w-full py-3 bg-[#141414] text-white text-sm font-semibold tracking-widest uppercase hover:bg-black transition-colors"
           >
             Download QR Code
           </button>
-          <p className="text-center text-[#333] text-xs">
+          <p className="text-center text-[#b0b0b0] text-xs">
             Go ahead, scan it. We promise it leads somewhere meaningful.
           </p>
         </div>

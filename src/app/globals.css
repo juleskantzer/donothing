@@ -3,17 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0a0a0a;
-  --fg: #e5e5e5;
-  --muted: #555;
-  --border: #222;
-  --accent: #fff;
+  --bg: #fafaf8;
+  --fg: #1a1a1a;
+  --muted: #6b6b6b;
+  --border: #e5e5e2;
+  --accent: #111;
 }
 
 body {
   background-color: var(--bg);
   color: var(--fg);
-  font-family: 'Courier New', Courier, monospace;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 @keyframes blink {

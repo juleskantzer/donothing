@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Navbar from "./components/Navbar";
 
 export const metadata: Metadata = {
   title: "nothing — there is nothing we can do",
@@ -9,7 +10,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#0a0a0a] text-[#e5e5e5]">
+      <body className="min-h-screen bg-[#fafaf8] text-[#1a1a1a]">
+        <Navbar />
         <main>{children}</main>
       </body>
     </html>
