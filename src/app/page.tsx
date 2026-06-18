@@ -113,15 +113,15 @@ export default function Home() {
   useEffect(() => {
     setPos(
       spots.map((s) => ({
-        x: Math.min(74, Math.max(4, s.x + (-8 + Math.random() * 16))),
-        y: Math.min(64, Math.max(24, s.y + (-8 + Math.random() * 16))),
+        x: Math.min(54, Math.max(4, s.x + (-8 + Math.random() * 16))),
+        y: Math.min(62, Math.max(24, s.y + (-8 + Math.random() * 16))),
         tilt: -8 + Math.random() * 16,
       }))
     );
   }, []);
 
   const [draggingI, setDraggingI] = useState<number | null>(null);
-  const drag = useRef<{ i: number; offX: number; offY: number } | null>(null);
+  const drag = useRef<{ i: number; offX: number; offY: number; el: HTMLElement } | null>(null);
   const topZ = useRef(spots.length);
 
   const bringToFront = useCallback((i: number) => {
@@ -138,10 +138,10 @@ export default function Home() {
       if (!rect) return;
       const px = ((e.clientX - rect.left) / rect.width) * 100;
       const py = ((e.clientY - rect.top) / rect.height) * 100;
-      drag.current = { i, offX: px - pos[i].x, offY: py - pos[i].y };
+      drag.current = { i, offX: px - pos[i].x, offY: py - pos[i].y, el: e.currentTarget as HTMLElement };
       setDraggingI(i);
       bringToFront(i);
-      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+      e.currentTarget.setPointerCapture?.(e.pointerId);
     },
     [pos, bringToFront]
   );
@@ -152,8 +152,11 @@ export default function Home() {
     if (!d || !rect) return;
     const px = ((e.clientX - rect.left) / rect.width) * 100;
     const py = ((e.clientY - rect.top) / rect.height) * 100;
-    const nx = Math.min(82, Math.max(0, px - d.offX));
-    const ny = Math.min(80, Math.max(2, py - d.offY));
+    // keep the note fully inside the board, whatever its rendered size
+    const maxX = 100 - (d.el.offsetWidth / rect.width) * 100;
+    const maxY = 100 - (d.el.offsetHeight / rect.height) * 100;
+    const nx = Math.min(maxX, Math.max(0, px - d.offX));
+    const ny = Math.min(maxY, Math.max(0, py - d.offY));
     setPos((prev) => prev.map((p, idx) => (idx === d.i ? { ...p, x: nx, y: ny } : p)));
   }, []);
 
@@ -206,7 +209,7 @@ export default function Home() {
                 ? { transform: "rotate(1deg) scale(1.1)", cursor: "grabbing" }
                 : {}),
             } as React.CSSProperties}
-            className={`group absolute w-48 p-4 rounded-sm text-[#1a1a1a] cursor-grab
+            className={`group absolute w-40 sm:w-48 p-4 rounded-sm text-[#1a1a1a] cursor-grab touch-none
               [transform:rotate(var(--tilt))]
               transition-[transform,box-shadow] duration-300 ease-out will-change-transform
               hover:[transform:rotate(0deg)_translateY(-10px)_scale(1.06)]

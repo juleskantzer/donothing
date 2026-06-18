@@ -1,8 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+// page titles by route, so the nav shows where you currently are
+const TITLES: Record<string, string> = {
+  "/": "Home",
+  "/tools/image-passthrough": "Image Optimizer",
+  "/tools/meditation": "Guided Meditation",
+  "/tools/motivational-quote": "Motivational Quote Generator",
+  "/tools/todo": "Smart Todo List",
+  "/tools/timer": "Productivity Timer",
+  "/tools/decision-maker": "Decision Maker",
+  "/tools/notes": "Private Notes",
+  "/tools/qr-code": "QR Code Generator",
+  "/tools/chat": "AI Chat Assistant",
+  "/tools/url-generator": "URL Generator",
+  "/tools/youtube-player": "YouTube Player",
+};
+
+function titleFor(pathname: string): string {
+  if (TITLES[pathname]) return TITLES[pathname];
+  const slug = pathname.split("/").filter(Boolean).pop() ?? "";
+  return slug
+    ? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    : "Home";
+}
 
 function Logo() {
   return (
@@ -25,18 +49,20 @@ function Logo() {
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname() || "/";
+  const currentTitle = titleFor(pathname);
   const [menuOpen, setMenuOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
 
-  function goHome(e: React.MouseEvent) {
+  function reloadCurrent(e: React.MouseEvent) {
     e.preventDefault();
     setMenuOpen(false);
     setTransitioning(true);
-    // curtain covers the site, then we reload home and reveal it again
+    // curtain covers the site, then we reload the current page and reveal it again
     window.setTimeout(() => {
       window.scrollTo({ top: 0 });
-      router.push("/");
+      router.push(pathname);
       router.refresh();
       window.setTimeout(() => setTransitioning(false), 480);
     }, 480);
@@ -50,11 +76,11 @@ export default function Navbar() {
 
           <div className="flex items-center gap-4 sm:gap-6">
             <Link
-              href="/"
-              onClick={goHome}
-              className="text-xs uppercase tracking-widest text-[#888] transition-colors hover:text-[#1a1a1a]"
+              href={pathname}
+              onClick={reloadCurrent}
+              className="max-w-[40vw] truncate text-xs uppercase tracking-widest text-[#888] transition-colors hover:text-[#1a1a1a]"
             >
-              Home
+              {currentTitle}
             </Link>
             <button
               onClick={() => setAuthOpen(true)}
