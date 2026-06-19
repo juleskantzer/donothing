@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import CookieBanner from "./components/CookieBanner";
 
 export const metadata: Metadata = {
   title: "nothing — there is nothing we can do",
@@ -13,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-[#fafaf8] text-[#1a1a1a]">
         <Navbar />
         <main>{children}</main>
+        <CookieBanner />
       </body>
     </html>
   );

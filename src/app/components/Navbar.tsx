@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 // page titles by route, so the nav shows where you currently are
 const TITLES: Record<string, string> = {
   "/": "Home",
+  "/pricing": "Pricing",
   "/tools/image-passthrough": "Image Optimizer",
   "/tools/meditation": "Guided Meditation",
   "/tools/motivational-quote": "Motivational Quote Generator",
@@ -27,6 +28,10 @@ function titleFor(pathname: string): string {
     ? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
     : "Home";
 }
+
+// the available versions of nothing — they are all exactly the same
+const VERSIONS = ["v1", "v2", "v3"] as const;
+const VERSION_KEY = "nothing-version";
 
 function Logo() {
   return (
@@ -54,6 +59,28 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
+  const [version, setVersion] = useState<string>("v1");
+
+  // restore the previously chosen version (changes nothing, of course)
+  useEffect(() => {
+    const saved = window.localStorage.getItem(VERSION_KEY);
+    if (saved && VERSIONS.includes(saved as (typeof VERSIONS)[number])) {
+      setVersion(saved);
+    }
+  }, []);
+
+  function changeVersion(next: string) {
+    if (next === version) return;
+    setVersion(next);
+    window.localStorage.setItem(VERSION_KEY, next);
+    setMenuOpen(false);
+    setTransitioning(true);
+    // curtain covers the site, then reveals the brand new (identical) version — no reload
+    window.setTimeout(() => {
+      window.scrollTo({ top: 0 });
+      window.setTimeout(() => setTransitioning(false), 480);
+    }, 480);
+  }
 
   function reloadCurrent(e: React.MouseEvent) {
     e.preventDefault();
@@ -82,6 +109,28 @@ export default function Navbar() {
             >
               {currentTitle}
             </Link>
+            {/* Shop — leads to pricing for things that cost nothing */}
+            <Link
+              href="/pricing"
+              aria-label="Pricing"
+              title="Pricing"
+              className="flex h-9 w-9 items-center justify-center rounded-md text-[#1a1a1a] transition-colors hover:bg-[#1a1a1a] hover:text-white"
+            >
+              <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" aria-hidden>
+                <path
+                  d="M6 8 H18 L17 20 H7 Z M9 8 V6 a3 3 0 0 1 6 0 V8"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Link>
+
+            {/* Version selector — every version is identical (there is nothing to update) */}
+            <VersionSelect value={version} onChange={changeVersion} />
+
             <button
               onClick={() => setAuthOpen(true)}
               className="rounded-md border border-[#1a1a1a] px-4 py-1.5 text-xs font-medium uppercase tracking-widest text-[#1a1a1a] transition-colors hover:bg-[#1a1a1a] hover:text-white"
@@ -141,6 +190,83 @@ export default function Navbar() {
         </span>
       </div>
     </>
+  );
+}
+
+function VersionSelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        onBlur={() => window.setTimeout(() => setOpen(false), 120)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={`Version ${value}`}
+        className={`relative flex w-[4.5rem] items-center rounded-md border py-1.5 pl-3 pr-7 text-xs font-medium uppercase tracking-widest transition-colors ${
+          open
+            ? "border-[#1a1a1a] bg-[#1a1a1a] text-white"
+            : "border-[#1a1a1a] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
+        }`}
+      >
+        <span className="flex-1 text-center tabular-nums">{value}</span>
+        <svg
+          viewBox="0 0 10 6"
+          aria-hidden
+          className={`pointer-events-none absolute right-2.5 top-1/2 h-1.5 w-2.5 -translate-y-1/2 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        >
+          <path d="M1 1 L5 5 L9 1" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      <ul
+        role="listbox"
+        className={`absolute right-0 top-[calc(100%+6px)] z-[60] w-[4.5rem] overflow-hidden rounded-md border border-[#ececec] bg-[#fafaf8] p-1 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.35)] transition-all duration-150 ${
+          open ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
+        }`}
+      >
+        {VERSIONS.map((v) => {
+          const active = v === value;
+          return (
+            <li key={v} role="option" aria-selected={active}>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setOpen(false);
+                  onChange(v);
+                }}
+                className={`flex w-full items-center justify-between gap-3 rounded px-2.5 py-1.5 text-xs font-medium uppercase tracking-widest transition-colors ${
+                  active ? "bg-[#1a1a1a] text-white" : "text-[#666] hover:bg-[#ececec] hover:text-[#1a1a1a]"
+                }`}
+              >
+                <span className="tabular-nums">{v}</span>
+                {active && (
+                  <svg viewBox="0 0 12 10" aria-hidden className="h-2.5 w-3">
+                    <path d="M1 5 L4.5 8.5 L11 1.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 

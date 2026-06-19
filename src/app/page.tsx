@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import TrustedBy from "./components/TrustedBy";
+import Carousel from "./components/Carousel";
 
 const tools = [
   {
@@ -234,10 +236,6 @@ export default function Home() {
         className="relative h-[88vh] min-h-[620px] w-full overflow-hidden select-none [perspective:1400px]"
         style={{
           backgroundColor: "#fafaf8",
-          backgroundImage:
-            "radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px)",
-          backgroundSize: "26px 26px, 26px 26px",
-          backgroundPosition: "0 0, 13px 13px",
         }}
       >
         {/* Wordmark */}
@@ -291,11 +289,11 @@ export default function Home() {
               draggable={false}
               onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => e.stopPropagation()}
-              className="mt-3 inline-flex items-center gap-1 rounded-md bg-black/80 px-3 py-1.5
-                text-[11px] font-medium text-white cursor-pointer
+              className="mt-3 mx-auto flex w-fit items-center justify-center rounded-md bg-black/80 px-2.5 py-1
+                text-[10px] font-medium text-white cursor-pointer
                 transition-colors hover:bg-black"
             >
-              Open <span aria-hidden>→</span>
+              Open
             </Link>
           </div>
         ))}
@@ -309,41 +307,58 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── TRUSTED BY : an infinite marquee of blurred, meaningless logos ── */}
+      <TrustedBy />
+
       {/* ── ALL TOOLS : classic card grid ── */}
       <section className="border-t border-[#ececec] bg-white">
         <div className="max-w-6xl mx-auto px-6 py-20">
-          <div className="mb-12">
+          <div className="mb-12 text-center">
             <h2 className="text-2xl font-semibold tracking-tight text-[#111]">All tools</h2>
             <p className="text-[#777] mt-2 text-sm">
               {tools.length} tools. Zero outcomes. Browse the complete collection below.
             </p>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {tools.map((tool) => (
-              <Link
-                key={tool.slug}
-                href={`/tools/${tool.slug}`}
-                className="group relative flex flex-col rounded-xl border border-[#ececec] bg-white p-6
-                  transition-all duration-200 hover:-translate-y-1 hover:border-[#d9d9d9]
-                  hover:shadow-[0_16px_40px_-16px_rgba(0,0,0,0.2)]"
-              >
-                <span
-                  className="mb-4 h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: tool.note }}
-                />
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="text-[10px] tracking-widest text-[#999] uppercase">
+          <div className="grid justify-items-center gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {tools.map((tool, i) => {
+              // fixed, deterministic tilt (no drag) — keeps the sticky-note feel
+              const tilt = [-3, 2.5, -1.5, 3, -2, 1.5][i % 6];
+              return (
+                <Link
+                  key={tool.slug}
+                  href={`/tools/${tool.slug}`}
+                  style={{
+                    backgroundColor: tool.note,
+                    ["--tilt" as string]: `${tilt}deg`,
+                  } as React.CSSProperties}
+                  className="group relative flex w-52 flex-col rounded-sm p-5 text-[#1a1a1a]
+                    [transform:rotate(var(--tilt))]
+                    transition-[transform,box-shadow] duration-300 ease-out will-change-transform
+                    shadow-[0_10px_22px_-8px_rgba(0,0,0,0.28),0_2px_5px_rgba(0,0,0,0.18)]
+                    hover:[transform:rotate(0deg)_translateY(-8px)_scale(1.04)]
+                    hover:shadow-[0_24px_40px_-12px_rgba(0,0,0,0.35)]"
+                >
+                  {/* peeled corner */}
+                  <span className="pointer-events-none absolute top-0 right-0 h-5 w-5
+                    bg-gradient-to-bl from-black/15 to-transparent
+                    [clip-path:polygon(100%_0,0_0,100%_100%)] rounded-tr-sm" />
+                  <span className="self-start rounded-sm bg-black/5 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-[#444]">
                     {tool.badge}
                   </span>
-                  <span className="text-[#ccc] transition-colors group-hover:text-[#333]">→</span>
-                </div>
-                <h3 className="text-base font-semibold text-[#111]">{tool.name}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#777]">{tool.description}</p>
-              </Link>
-            ))}
+                  <h3 className="mt-2 text-sm font-semibold tracking-wide">{tool.name}</h3>
+                  <p className="mt-1 text-[11px] leading-snug text-black/60">{tool.description}</p>
+                  <span className="mt-auto mx-auto flex w-fit items-center justify-center rounded-md bg-black/80 px-2.5 py-1 text-[10px] font-medium text-white transition-colors group-hover:bg-black">
+                    Open
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
+
+        {/* ── TESTIMONIALS : a carousel of five identical slides ── */}
+        <Carousel />
 
         {/* ── The Button : visibly clickable, audibly clickable, functionally nothing ── */}
         <div className="border-t border-[#ececec]">

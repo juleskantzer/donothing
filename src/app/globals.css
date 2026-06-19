@@ -10,6 +10,12 @@
   --accent: #111;
 }
 
+/* Always reserve room for the scrollbar so centered content (e.g. the navbar
+   logo) doesn't shift left/right between short and tall pages. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   background-color: var(--bg);
   color: var(--fg);
@@ -41,4 +47,21 @@ body {
 
 .ripple {
   animation: ripple 0.6s ease-out forwards;
+}
+
+/* Infinite horizontal scroll for the (pointless) "trusted by" marquee.
+   The track holds the logo set twice; sliding by -50% loops seamlessly. */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee 60s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
 }
