@@ -146,7 +146,7 @@ export default function TrustedBy() {
 
       {/* fade the edges so logos dissolve in and out */}
       <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-        <div className="marquee-track flex w-max blur-[6px]">
+        <div className="marquee-track flex w-max py-2 blur-[6px]">
           {[...half, ...half].map((logo, i) => (
             <LogoItem key={i} {...logo} />
           ))}

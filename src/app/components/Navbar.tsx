@@ -29,10 +29,6 @@ function titleFor(pathname: string): string {
     : "Home";
 }
 
-// the available versions of nothing — they are all exactly the same
-const VERSIONS = ["v1", "v2", "v3"] as const;
-const VERSION_KEY = "nothing-version";
-
 function Logo() {
   return (
     <Link href="/" aria-label="nothing — home" className="group flex items-center gap-2.5">
@@ -59,28 +55,6 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
-  const [version, setVersion] = useState<string>("v1");
-
-  // restore the previously chosen version (changes nothing, of course)
-  useEffect(() => {
-    const saved = window.localStorage.getItem(VERSION_KEY);
-    if (saved && VERSIONS.includes(saved as (typeof VERSIONS)[number])) {
-      setVersion(saved);
-    }
-  }, []);
-
-  function changeVersion(next: string) {
-    if (next === version) return;
-    setVersion(next);
-    window.localStorage.setItem(VERSION_KEY, next);
-    setMenuOpen(false);
-    setTransitioning(true);
-    // curtain covers the site, then reveals the brand new (identical) version — no reload
-    window.setTimeout(() => {
-      window.scrollTo({ top: 0 });
-      window.setTimeout(() => setTransitioning(false), 480);
-    }, 480);
-  }
 
   function reloadCurrent(e: React.MouseEvent) {
     e.preventDefault();
@@ -109,6 +83,13 @@ export default function Navbar() {
             >
               {currentTitle}
             </Link>
+            <button
+              onClick={() => setAuthOpen(true)}
+              className="rounded-md border border-[#1a1a1a] px-4 py-1.5 text-xs font-medium uppercase tracking-widest text-[#1a1a1a] transition-colors hover:bg-[#1a1a1a] hover:text-white"
+            >
+              Sign in
+            </button>
+
             {/* Shop — leads to pricing for things that cost nothing */}
             <Link
               href="/pricing"
@@ -128,15 +109,22 @@ export default function Navbar() {
               </svg>
             </Link>
 
-            {/* Version selector — every version is identical (there is nothing to update) */}
-            <VersionSelect value={version} onChange={changeVersion} />
-
-            <button
-              onClick={() => setAuthOpen(true)}
-              className="rounded-md border border-[#1a1a1a] px-4 py-1.5 text-xs font-medium uppercase tracking-widest text-[#1a1a1a] transition-colors hover:bg-[#1a1a1a] hover:text-white"
+            {/* Settings — every control works and changes nothing */}
+            <Link
+              href="/settings"
+              aria-label="Settings"
+              title="Settings"
+              className="flex h-9 w-9 items-center justify-center rounded-md text-[#1a1a1a] transition-colors hover:bg-[#1a1a1a] hover:text-white"
             >
-              Sign in
-            </button>
+              <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" aria-hidden>
+                <path
+                  fill="currentColor"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7 7 0 0 0-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87a.5.5 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z"
+                />
+              </svg>
+            </Link>
 
             {/* Burger — opens a menu with nothing in it */}
             <button
@@ -190,83 +178,6 @@ export default function Navbar() {
         </span>
       </div>
     </>
-  );
-}
-
-function VersionSelect({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
-
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        onBlur={() => window.setTimeout(() => setOpen(false), 120)}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-label={`Version ${value}`}
-        className={`relative flex w-[4.5rem] items-center rounded-md border py-1.5 pl-3 pr-7 text-xs font-medium uppercase tracking-widest transition-colors ${
-          open
-            ? "border-[#1a1a1a] bg-[#1a1a1a] text-white"
-            : "border-[#1a1a1a] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
-        }`}
-      >
-        <span className="flex-1 text-center tabular-nums">{value}</span>
-        <svg
-          viewBox="0 0 10 6"
-          aria-hidden
-          className={`pointer-events-none absolute right-2.5 top-1/2 h-1.5 w-2.5 -translate-y-1/2 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-        >
-          <path d="M1 1 L5 5 L9 1" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-
-      <ul
-        role="listbox"
-        className={`absolute right-0 top-[calc(100%+6px)] z-[60] w-[4.5rem] overflow-hidden rounded-md border border-[#ececec] bg-[#fafaf8] p-1 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.35)] transition-all duration-150 ${
-          open ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
-        }`}
-      >
-        {VERSIONS.map((v) => {
-          const active = v === value;
-          return (
-            <li key={v} role="option" aria-selected={active}>
-              <button
-                type="button"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  setOpen(false);
-                  onChange(v);
-                }}
-                className={`flex w-full items-center justify-between gap-3 rounded px-2.5 py-1.5 text-xs font-medium uppercase tracking-widest transition-colors ${
-                  active ? "bg-[#1a1a1a] text-white" : "text-[#666] hover:bg-[#ececec] hover:text-[#1a1a1a]"
-                }`}
-              >
-                <span className="tabular-nums">{v}</span>
-                {active && (
-                  <svg viewBox="0 0 12 10" aria-hidden className="h-2.5 w-3">
-                    <path d="M1 5 L4.5 8.5 L11 1.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
   );
 }
 

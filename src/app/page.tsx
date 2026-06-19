@@ -94,9 +94,31 @@ const tools = [
     note: "#fecaca",
     featured: false,
   },
+  {
+    slug: "integer-rounder",
+    name: "Integer Rounder",
+    description: "Enter any whole number. Choose ×1, +0, 100% value, or round to integer. Four operations, all returning the same number.",
+    badge: "Intelligence",
+    note: "#e9d5ff",
+    featured: false,
+  },
 ];
 
 const featured = tools.filter((t) => t.featured);
+
+// one post-it color per theme — tools sharing a theme share a color
+const THEME_COLORS: Record<string, string> = {
+  "AI-Powered": "#cffafe",
+  Wellness: "#bbf7d0",
+  Productivity: "#fed7aa",
+  Organization: "#bfdbfe",
+  Intelligence: "#ddd6fe",
+  Entertainment: "#fecaca",
+};
+const colorFor = (theme: string) => THEME_COLORS[theme] ?? "#ececec";
+
+// filter chips for the "All tools" section — purely decorative; they filter nothing
+const categories = ["All", ...Array.from(new Set(tools.map((t) => t.badge)))];
 
 // initial scattered spots for the featured post-its (percent of board)
 const spots = [
@@ -121,6 +143,9 @@ export default function Home() {
       }))
     );
   }, []);
+
+  // active filter chip — changes which one looks selected, never what is shown
+  const [activeFilter, setActiveFilter] = useState("All");
 
   const [draggingI, setDraggingI] = useState<number | null>(null);
   const drag = useRef<{ i: number; offX: number; offY: number; el: HTMLElement } | null>(null);
@@ -256,7 +281,7 @@ export default function Home() {
             key={tool.slug}
             onPointerDown={(e) => onPointerDown(e, i)}
             style={{
-              backgroundColor: tool.note,
+              backgroundColor: colorFor(tool.badge),
               left: `${pos[i].x}%`,
               top: `${pos[i].y}%`,
               zIndex: z[i],
@@ -265,7 +290,7 @@ export default function Home() {
                 ? { transform: "rotate(1deg) scale(1.1)", cursor: "grabbing" }
                 : {}),
             } as React.CSSProperties}
-            className={`group absolute w-40 sm:w-48 p-4 rounded-sm text-[#1a1a1a] cursor-grab touch-none
+            className={`group absolute flex aspect-square w-40 sm:w-48 flex-col items-center justify-center overflow-hidden p-4 rounded-sm text-center text-[#1a1a1a] cursor-grab touch-none
               [transform:rotate(var(--tilt))]
               transition-[transform,box-shadow] duration-300 ease-out will-change-transform
               hover:[transform:rotate(0deg)_translateY(-10px)_scale(1.06)]
@@ -279,10 +304,7 @@ export default function Home() {
             <span className="pointer-events-none absolute top-0 right-0 h-5 w-5
               bg-gradient-to-bl from-black/15 to-transparent
               [clip-path:polygon(100%_0,0_0,100%_100%)] rounded-tr-sm" />
-            <span className="text-[9px] tracking-widest text-[#444] uppercase bg-black/5 px-1.5 py-0.5 rounded-sm">
-              {tool.badge}
-            </span>
-            <h2 className="font-semibold text-sm mt-2 mb-1 tracking-wide">{tool.name}</h2>
+            <h2 className="font-semibold text-sm mb-1 tracking-wide">{tool.name}</h2>
             <p className="text-black/60 text-[11px] leading-snug">{tool.description}</p>
             <Link
               href={`/tools/${tool.slug}`}
@@ -313,11 +335,33 @@ export default function Home() {
       {/* ── ALL TOOLS : classic card grid ── */}
       <section className="border-t border-[#ececec] bg-white">
         <div className="max-w-6xl mx-auto px-6 py-20">
-          <div className="mb-12 text-center">
+          <div className="mb-8 text-center">
             <h2 className="text-2xl font-semibold tracking-tight text-[#111]">All tools</h2>
             <p className="text-[#777] mt-2 text-sm">
               {tools.length} tools. Zero outcomes. Browse the complete collection below.
             </p>
+          </div>
+
+          {/* Filter bar — fully interactive, filters absolutely nothing */}
+          <div className="mb-12 flex flex-wrap items-center justify-center gap-2">
+            {categories.map((cat) => {
+              const active = cat === activeFilter;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveFilter(cat)}
+                  style={{ backgroundColor: active ? colorFor(cat) : undefined }}
+                  className={`rounded-full border px-3.5 py-1.5 text-xs font-medium tracking-wide transition-colors ${
+                    active
+                      ? "border-[#111] text-[#1a1a1a]"
+                      : "border-[#e2e2e0] text-[#666] hover:border-[#999] hover:text-[#111]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
 
           <div className="grid justify-items-center gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -329,10 +373,10 @@ export default function Home() {
                   key={tool.slug}
                   href={`/tools/${tool.slug}`}
                   style={{
-                    backgroundColor: tool.note,
+                    backgroundColor: colorFor(tool.badge),
                     ["--tilt" as string]: `${tilt}deg`,
                   } as React.CSSProperties}
-                  className="group relative flex w-52 flex-col rounded-sm p-5 text-[#1a1a1a]
+                  className="group relative flex aspect-square w-52 flex-col items-center justify-center overflow-hidden rounded-sm p-5 text-center text-[#1a1a1a]
                     [transform:rotate(var(--tilt))]
                     transition-[transform,box-shadow] duration-300 ease-out will-change-transform
                     shadow-[0_10px_22px_-8px_rgba(0,0,0,0.28),0_2px_5px_rgba(0,0,0,0.18)]
@@ -343,12 +387,9 @@ export default function Home() {
                   <span className="pointer-events-none absolute top-0 right-0 h-5 w-5
                     bg-gradient-to-bl from-black/15 to-transparent
                     [clip-path:polygon(100%_0,0_0,100%_100%)] rounded-tr-sm" />
-                  <span className="self-start rounded-sm bg-black/5 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-[#444]">
-                    {tool.badge}
-                  </span>
-                  <h3 className="mt-2 text-sm font-semibold tracking-wide">{tool.name}</h3>
+                  <h3 className="text-sm font-semibold tracking-wide">{tool.name}</h3>
                   <p className="mt-1 text-[11px] leading-snug text-black/60">{tool.description}</p>
-                  <span className="mt-auto mx-auto flex w-fit items-center justify-center rounded-md bg-black/80 px-2.5 py-1 text-[10px] font-medium text-white transition-colors group-hover:bg-black">
+                  <span className="mt-3 mx-auto flex w-fit items-center justify-center rounded-md bg-black/80 px-2.5 py-1 text-[10px] font-medium text-white transition-colors group-hover:bg-black">
                     Open
                   </span>
                 </Link>
