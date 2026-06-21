@@ -60,6 +60,12 @@ body {
   animation: marquee 60s linear infinite;
 }
 
+/* Translation progress bar — a scanning sweep for a translation that does nothing */
+@keyframes translate-scan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
     animation: none;

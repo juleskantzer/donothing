@@ -55,6 +55,17 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
+  // Translation engine — detects English, translates it to English, changes nothing
+  const [translateState, setTranslateState] = useState<"idle" | "translating" | "done">("idle");
+
+  async function translateToEnglish() {
+    if (translateState === "translating") return;
+    setTranslateState("translating");
+    // serious-looking neural translation pass over a page that is already in English
+    await new Promise((r) => setTimeout(r, 2200));
+    setTranslateState("done");
+    window.setTimeout(() => setTranslateState("idle"), 4200);
+  }
 
   function reloadCurrent(e: React.MouseEvent) {
     e.preventDefault();
@@ -83,6 +94,30 @@ export default function Navbar() {
             >
               {currentTitle}
             </Link>
+            {/* Translate — translates the site from English to English */}
+            <button
+              onClick={translateToEnglish}
+              disabled={translateState === "translating"}
+              aria-label="Translate to English"
+              title="Translate to English"
+              className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] font-medium uppercase tracking-widest text-[#1a1a1a] transition-colors hover:bg-[#1a1a1a] hover:text-white disabled:opacity-60"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className={`h-4 w-4 ${translateState === "translating" ? "animate-spin" : ""}`}
+                aria-hidden
+              >
+                <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                <path
+                  d="M3 12 H21 M12 3 a14 14 0 0 1 0 18 a14 14 0 0 1 0 -18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                />
+              </svg>
+              <span className="hidden sm:inline">EN</span>
+            </button>
+
             <button
               onClick={() => setAuthOpen(true)}
               className="rounded-md border border-[#1a1a1a] px-4 py-1.5 text-xs font-medium uppercase tracking-widest text-[#1a1a1a] transition-colors hover:bg-[#1a1a1a] hover:text-white"
@@ -153,6 +188,8 @@ export default function Navbar() {
       <BurgerMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+
+      <TranslationOverlay state={translateState} />
 
       {/* Home transition curtain — the site goes away, then comes back */}
       <div
@@ -231,6 +268,51 @@ function BurgerMenu({
           nothing — there is nothing we can do
         </p>
       </aside>
+    </>
+  );
+}
+
+function TranslationOverlay({ state }: { state: "idle" | "translating" | "done" }) {
+  return (
+    <>
+      {/* Translating — a real progress bar scanning a page that is already English */}
+      <div
+        aria-hidden={state !== "translating"}
+        className={`fixed inset-x-0 top-14 z-[65] transition-opacity duration-300 ${
+          state === "translating" ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      >
+        <div className="h-0.5 w-full overflow-hidden bg-[#ececec]">
+          <div className="h-full w-1/3 animate-[translate-scan_1.1s_ease-in-out_infinite] bg-[#1a1a1a]" />
+        </div>
+        <p className="mx-auto mt-2 max-w-6xl px-6 text-[11px] uppercase tracking-widest text-[#999]">
+          Detecting language… English → Translating to English…
+        </p>
+      </div>
+
+      {/* Done — proudly reports a translation that changed nothing */}
+      <div
+        role="status"
+        className={`fixed bottom-6 left-1/2 z-[65] -translate-x-1/2 transition-all duration-300 ${
+          state === "done"
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-2 opacity-0"
+        }`}
+      >
+        <div className="flex items-start gap-3 rounded-xl border border-[#ececec] bg-white px-5 py-3.5 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.3)]">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#dcfce7] text-[#16a34a]">
+            ✓
+          </span>
+          <div>
+            <p className="text-sm font-semibold tracking-tight text-[#111]">
+              Page translated to English
+            </p>
+            <p className="mt-0.5 text-[11px] leading-relaxed text-[#999]">
+              Detected language: English. Target language: English. 0 words changed.
+            </p>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
